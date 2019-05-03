@@ -305,23 +305,11 @@ mod tests {
     #[test]
     fn solve() {
         let mut test_instance = get_solvable_test_instance();
+        println!("Before solve:");
+        println!("{:?}", test_instance);
         test_instance.solve();
+        println!("After solve:");
         println!("{:?}", test_instance);
-    }
-
-    #[test]
-    fn solved() {
-        let test_instance = get_solvable_test_instance();
-        let solved_test_instance = test_instance.solved();
-        println!("{:?}", test_instance);
-        println!("{:?}", solved_test_instance);
-    }
-
-    #[test]
-    fn solve_fail() {
-        let mut unsolvable_test_instance = get_unsolvable_test_instance();
-        unsolvable_test_instance.solve();
-        println!("{:?}", unsolvable_test_instance);
     }
 
     #[test]
