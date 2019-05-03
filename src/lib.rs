@@ -15,20 +15,20 @@ impl Sudoku {
         self.grid[0].len()
     }
 
-    fn value_in_row(&self, value: u32, row: usize) -> bool {
+    fn row_contains(&self, row: usize, value: u32) -> bool {
         self.grid[row]
             .iter()
             .any(|&value_in_row| value_in_row == Some(value))
     }
 
-    fn value_in_col(&self, value: u32, col: usize) -> bool {
+    fn col_contains(&self, col: usize, value: u32) -> bool {
         self.grid
             .iter()
             .map(|row| row[col])
             .any(|value_in_col| value_in_col == Some(value))
     }
 
-    fn value_in_sec(&self, value: u32, row: usize, col: usize) -> bool {
+    fn sec_contains(&self, row: usize, col: usize, value: u32) -> bool {
         let first_row_in_sec = (row / self.sec_height) * self.sec_height;
         let first_col_in_sec = (col / self.sec_width) * self.sec_width;
         for sec_row in first_row_in_sec..first_row_in_sec + self.sec_height {
@@ -42,9 +42,9 @@ impl Sudoku {
     }
 
     fn can_place_value(&self, value: u32, row: usize, col: usize) -> bool {
-        !self.value_in_row(value, row)
-            && !self.value_in_col(value, col)
-            && !self.value_in_sec(value, row, col)
+        !self.row_contains(row, value)
+            && !self.col_contains(col, value)
+            && !self.sec_contains(row, col, value)
     }
 
     pub fn solved(&self) -> Sudoku {
