@@ -45,7 +45,8 @@ impl Sudoku {
     }
 
     fn can_place_value(&self, value: u32, row: usize, col: usize) -> bool {
-        self.count_in_row(row, value) == 0
+        self.grid[row][col] == None
+            && self.count_in_row(row, value) == 0
             && self.count_in_col(col, value) == 0
             && self.count_in_sec(row, col, value) == 0
     }
