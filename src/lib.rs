@@ -15,36 +15,39 @@ impl Sudoku {
         self.grid[0].len()
     }
 
-    fn row_contains(&self, row: usize, value: u32) -> bool {
+    fn count_in_row(&self, row: usize, value: u32) -> usize {
         self.grid[row]
             .iter()
-            .any(|&value_in_row| value_in_row == Some(value))
+            .filter(|&&value_in_row| value_in_row == Some(value))
+            .count()
     }
 
-    fn col_contains(&self, col: usize, value: u32) -> bool {
+    fn count_in_col(&self, col: usize, value: u32) -> usize {
         self.grid
             .iter()
             .map(|row| row[col])
-            .any(|value_in_col| value_in_col == Some(value))
+            .filter(|&value_in_col| value_in_col == Some(value))
+            .count()
     }
 
-    fn sec_contains(&self, row: usize, col: usize, value: u32) -> bool {
+    fn count_in_sec(&self, row: usize, col: usize, value: u32) -> usize {
         let first_row_in_sec = (row / self.sec_height) * self.sec_height;
         let first_col_in_sec = (col / self.sec_width) * self.sec_width;
+        let mut sec_count = 0;
         for sec_row in first_row_in_sec..first_row_in_sec + self.sec_height {
             for sec_col in first_col_in_sec..first_col_in_sec + self.sec_width {
                 if self.grid[sec_row][sec_col] == Some(value) {
-                    return true;
+                    sec_count += 1;
                 }
             }
         }
-        false
+        sec_count
     }
 
     fn can_place_value(&self, value: u32, row: usize, col: usize) -> bool {
-        !self.row_contains(row, value)
-            && !self.col_contains(col, value)
-            && !self.sec_contains(row, col, value)
+        self.count_in_row(row, value) == 0
+            && self.count_in_col(col, value) == 0
+            && self.count_in_sec(row, col, value) == 0
     }
 
     pub fn solved(&self) -> Sudoku {
