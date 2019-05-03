@@ -1,4 +1,4 @@
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct Sudoku {
     size: usize,
     sec_width: usize,
@@ -54,9 +54,7 @@ impl Sudoku {
     }
 
     pub fn solve(&mut self) {
-        if !self.solve_backtrack() {
-            panic!("Unsolvable puzzle")
-        }
+        self.solve_backtrack();
     }
 
     fn solve_backtrack(&mut self) -> bool {
@@ -116,7 +114,7 @@ mod tests {
     // 800203009
     // 005010300
 
-    fn get_test_instance() -> Sudoku {
+    fn get_solvable_test_instance() -> Sudoku {
         Sudoku {
             size: 9,
             sec_width: 3,
@@ -215,18 +213,121 @@ mod tests {
         }
     }
 
+    fn get_unsolvable_test_instance() -> Sudoku {
+        Sudoku {
+            size: 9,
+            sec_width: 3,
+            sec_height: 3,
+            grid: vec![
+                vec![
+                    None,
+                    None,
+                    Some(3),
+                    None,
+                    Some(2),
+                    None,
+                    Some(6),
+                    None,
+                    None,
+                ],
+                vec![
+                    Some(9),
+                    None,
+                    None,
+                    Some(3),
+                    None,
+                    Some(5),
+                    None,
+                    None,
+                    Some(1),
+                ],
+                vec![
+                    None,
+                    None,
+                    Some(1),
+                    Some(8),
+                    None,
+                    Some(6),
+                    Some(4),
+                    None,
+                    None,
+                ],
+                vec![
+                    None,
+                    None,
+                    Some(8),
+                    Some(1),
+                    None,
+                    Some(2),
+                    Some(9),
+                    None,
+                    None,
+                ],
+                vec![Some(7), None, None, None, None, None, None, None, Some(8)],
+                vec![
+                    None,
+                    None,
+                    Some(6),
+                    Some(7),
+                    None,
+                    Some(8),
+                    Some(2),
+                    None,
+                    None,
+                ],
+                vec![
+                    None,
+                    None,
+                    Some(2),
+                    Some(6),
+                    None,
+                    Some(9),
+                    Some(5),
+                    None,
+                    None,
+                ],
+                vec![
+                    Some(8),
+                    None,
+                    None,
+                    Some(2),
+                    None,
+                    Some(3),
+                    Some(3),
+                    None,
+                    Some(9),
+                ],
+                vec![None, None, Some(5), None, Some(1), None, None, None, None],
+            ],
+        }
+    }
+
     #[test]
     fn solve() {
-        let mut test_instance = get_test_instance();
+        let mut test_instance = get_solvable_test_instance();
         test_instance.solve();
         println!("{:?}", test_instance);
     }
 
     #[test]
     fn solved() {
-        let test_instance = get_test_instance();
+        let test_instance = get_solvable_test_instance();
         let solved_test_instance = test_instance.solved();
         println!("{:?}", test_instance);
         println!("{:?}", solved_test_instance);
+    }
+
+    #[test]
+    fn solve_fail() {
+        let mut unsolvable_test_instance = get_unsolvable_test_instance();
+        unsolvable_test_instance.solve();
+        println!("{:?}", unsolvable_test_instance);
+    }
+
+    #[test]
+    fn solved_fail() {
+        let unsolvable_test_instance = get_unsolvable_test_instance();
+        let solved_unsolvable_test_instance = unsolvable_test_instance.solved();
+        assert!(unsolvable_test_instance == solved_unsolvable_test_instance);
     }
 }
