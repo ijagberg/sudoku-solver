@@ -343,7 +343,7 @@ mod tests {
     }
 
     #[test]
-    fn solve() {
+    fn test_solvable() {
         let mut test_instance = get_solvable_test_instance();
         assert!(!test_instance.is_solved());
         test_instance.solve();
@@ -351,7 +351,7 @@ mod tests {
     }
 
     #[test]
-    fn solved_fail() {
+    fn test_unsolvable() {
         let unsolvable_test_instance = get_unsolvable_test_instance();
         assert!(!unsolvable_test_instance.is_solved());
         let solved_unsolvable_test_instance = unsolvable_test_instance.solved();
