@@ -114,52 +114,49 @@ impl Sudoku {
 impl std::fmt::Debug for Sudoku {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         use std::iter;
-        let top_border = format!(
-            "┌{}┐",
-            iter::repeat("─")
-                .take(self.width() * 2 - 1)
-                .collect::<String>(),
-        );
-        writeln!(f, "{}", top_border)?;
+        let value_length = self.size.to_string().len();
 
-        let mut row = 0;
-        while row < self.height() {
-            if row > 0 && row % self.sec_height == 0 {
-                writeln!(
-                    f,
-                    "{}",
-                    iter::repeat("─")
-                        .take(self.width() * 2 - 1)
-                        .collect::<String>()
-                )?;
-            }
-            let row_output = self.grid[row]
-                .iter()
-                .enumerate()
-                .map(|(col_index, col_value)| {
-                    let col_output = match col_value {
-                        Some(c) => c.to_string(),
-                        None => " ".to_string(),
-                    };
-                    if col_index > 0 && col_index % self.sec_width == 0 {
-                        format!("│ {}", col_output)
-                    } else {
-                        format!("{}", col_output)
-                    }
+        let row_outputs: Vec<String> = {
+            (0..self.height())
+                .map(|row| {
+                    self.grid[row]
+                        .iter()
+                        .enumerate()
+                        .flat_map(|(col_index, col_value)| {
+                            let col_value_output = match col_value {
+                                Some(c) => iter::repeat(" ".to_string())
+                                    .take(value_length - c.to_string().len())
+                                    .chain(iter::once(c.to_string()))
+                                    .collect::<String>(),
+                                None => iter::repeat("─").take(value_length).collect::<String>(),
+                            };
+                            if col_index > 0 && col_index % self.sec_width == 0 {
+                                // Border between two secs
+                                vec!["│".to_string(), col_value_output]
+                            } else {
+                                vec![col_value_output]
+                            }
+                        })
+                        .collect::<Vec<String>>()
+                        .join(" ")
                 })
+                .map(|row_string| format!("│ {} │", row_string))
                 .collect::<Vec<String>>()
-                .join(" ");
-            writeln!(f, "│ {} │", row_output)?;
-            row += 1;
-        }
+        };
 
-        let bottom_border = format!(
-            "└{}└",
-            iter::repeat("─")
-                .take(self.width() * 2 - 1)
-                .collect::<String>(),
+        let row_length = row_outputs[0].chars().count();
+        let top_border_output = format!(
+            "┌{}┐",
+            (0..row_length-2).map(|col_index| if col_index > 0 && col_index % self.sec_width == 0 {
+                "┬"
+            } else {
+                "─"
+            })
+            .collect::<String>()
         );
-        writeln!(f, "{}", bottom_border)?;
+
+        println!("{:?}", top_border_output);
+        println!("{:?}", row_outputs[0]);
 
         Ok(())
     }
