@@ -15,6 +15,34 @@ impl Sudoku {
         self.grid[0].len()
     }
 
+    pub fn is_solved(&self) -> bool {
+        for v in 1..=self.size {
+            // Check rows
+            for row in 0..self.height() {
+                if self.count_in_row(row, v as u32) != 1 {
+                    return false;
+                }
+            }
+
+            // Check cols
+            for col in 0..self.width() {
+                if self.count_in_col(col, v as u32) != 1 {
+                    return false;
+                }
+            }
+
+            // Check secs
+            for row in (0..self.height()).step_by(self.sec_height) {
+                for col in (0..self.width()).step_by(self.sec_width) {
+                    if self.count_in_sec(row, col, v as u32) != 1 {
+                        return false;
+                    }
+                }
+            }
+        }
+        true
+    }
+
     fn count_in_row(&self, row: usize, value: u32) -> usize {
         self.grid[row]
             .iter()
@@ -108,17 +136,16 @@ impl std::fmt::Debug for Sudoku {
 mod tests {
     use super::*;
 
-    // 003020600
-    // 900305001
-    // 001806400
-    // 008102900
-    // 700000008
-    // 006708200
-    // 002609500
-    // 800203009
-    // 005010300
-
     fn get_solvable_test_instance() -> Sudoku {
+        // 003020600
+        // 900305001
+        // 001806400
+        // 008102900
+        // 700000008
+        // 006708200
+        // 002609500
+        // 800203009
+        // 005010300
         Sudoku {
             size: 9,
             sec_width: 3,
@@ -218,6 +245,15 @@ mod tests {
     }
 
     fn get_unsolvable_test_instance() -> Sudoku {
+        // 003020600
+        // 900305001
+        // 001806400
+        // 008102900
+        // 700000008
+        // 006708200
+        // 002609500
+        // 800203309
+        // 005010000
         Sudoku {
             size: 9,
             sec_width: 3,
@@ -309,17 +345,17 @@ mod tests {
     #[test]
     fn solve() {
         let mut test_instance = get_solvable_test_instance();
-        println!("Before solve:");
-        println!("{:?}", test_instance);
+        assert!(!test_instance.is_solved());
         test_instance.solve();
-        println!("After solve:");
-        println!("{:?}", test_instance);
+        assert!(test_instance.is_solved());
     }
 
     #[test]
     fn solved_fail() {
         let unsolvable_test_instance = get_unsolvable_test_instance();
+        assert!(!unsolvable_test_instance.is_solved());
         let solved_unsolvable_test_instance = unsolvable_test_instance.solved();
+        assert!(!solved_unsolvable_test_instance.is_solved());
         assert!(unsolvable_test_instance == solved_unsolvable_test_instance);
     }
 }
