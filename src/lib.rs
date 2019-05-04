@@ -136,7 +136,7 @@ impl std::fmt::Debug for Sudoku {
 mod tests {
     use super::*;
 
-    fn get_solvable_test_instance() -> Sudoku {
+    fn get_solvable_9x9_test_instance() -> Sudoku {
         // 003020600
         // 900305001
         // 001806400
@@ -244,7 +244,7 @@ mod tests {
         }
     }
 
-    fn get_unsolvable_test_instance() -> Sudoku {
+    fn get_unsolvable_9x9_test_instance() -> Sudoku {
         // 003020600
         // 900305001
         // 001806400
@@ -342,20 +342,44 @@ mod tests {
         }
     }
 
-    #[test]
-    fn test_solvable() {
-        let mut test_instance = get_solvable_test_instance();
-        assert!(!test_instance.is_solved());
-        test_instance.solve();
-        assert!(test_instance.is_solved());
+    fn get_solvable_6x6_test_instance() -> Sudoku {
+        Sudoku {
+            size: 6,
+            sec_width: 3,
+            sec_height: 2,
+            grid: vec![
+                vec![Some(4), Some(2), Some(1), Some(3), None, None],
+                vec![None, None, Some(5), Some(4), None, Some(1)],
+                vec![None, None, Some(2), Some(6), None, None],
+                vec![None, Some(6), Some(4), None, None, None],
+                vec![Some(2), None, Some(6), Some(1), None, Some(3)],
+                vec![Some(1), Some(5), Some(3), Some(2), Some(4), None],
+            ],
+        }
     }
 
     #[test]
-    fn test_unsolvable() {
-        let unsolvable_test_instance = get_unsolvable_test_instance();
+    fn test_solvable_9x9() {
+        let mut solvable_test_instance = get_solvable_9x9_test_instance();
+        assert!(!solvable_test_instance.is_solved());
+        solvable_test_instance.solve();
+        assert!(solvable_test_instance.is_solved());
+    }
+
+    #[test]
+    fn test_unsolvable_9x9() {
+        let unsolvable_test_instance = get_unsolvable_9x9_test_instance();
         assert!(!unsolvable_test_instance.is_solved());
         let solved_unsolvable_test_instance = unsolvable_test_instance.solved();
         assert!(!solved_unsolvable_test_instance.is_solved());
         assert!(unsolvable_test_instance == solved_unsolvable_test_instance);
+    }
+
+    #[test]
+    fn test_solvable_6x6() {
+        let mut solvable_test_instance = get_solvable_6x6_test_instance();
+        assert!(!solvable_test_instance.is_solved());
+        solvable_test_instance.solve();
+        assert!(solvable_test_instance.is_solved());
     }
 }
