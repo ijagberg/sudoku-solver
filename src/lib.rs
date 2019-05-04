@@ -113,22 +113,55 @@ impl Sudoku {
 
 impl std::fmt::Debug for Sudoku {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(
-            f,
-            "{}",
-            self.grid
+        use std::iter;
+        let top_border = format!(
+            "┌{}┐",
+            iter::repeat("─")
+                .take(self.width() * 2 - 1)
+                .collect::<String>(),
+        );
+        writeln!(f, "{}", top_border)?;
+
+        let mut row = 0;
+        while row < self.height() {
+            if row > 0 && row % self.sec_height == 0 {
+                writeln!(
+                    f,
+                    "{}",
+                    iter::repeat("─")
+                        .take(self.width() * 2 - 1)
+                        .collect::<String>()
+                )?;
+            }
+            let row_output = self.grid[row]
                 .iter()
-                .map(|row| row
-                    .iter()
-                    .map(|c| match c {
-                        Some(v) => v.to_string(),
-                        None => "_".to_string(),
-                    })
-                    .collect::<Vec<String>>()
-                    .join(" "))
+                .enumerate()
+                .map(|(col_index, col_value)| {
+                    let col_output = match col_value {
+                        Some(c) => c.to_string(),
+                        None => " ".to_string(),
+                    };
+                    if col_index > 0 && col_index % self.sec_width == 0 {
+                        format!("│ {}", col_output)
+                    } else {
+                        format!("{}", col_output)
+                    }
+                })
                 .collect::<Vec<String>>()
-                .join("\n")
-        )
+                .join(" ");
+            writeln!(f, "│ {} │", row_output)?;
+            row += 1;
+        }
+
+        let bottom_border = format!(
+            "└{}└",
+            iter::repeat("─")
+                .take(self.width() * 2 - 1)
+                .collect::<String>(),
+        );
+        writeln!(f, "{}", bottom_border)?;
+
+        Ok(())
     }
 }
 
@@ -381,5 +414,6 @@ mod tests {
         assert!(!solvable_test_instance.is_solved());
         solvable_test_instance.solve();
         assert!(solvable_test_instance.is_solved());
+        println!("{:?}", solvable_test_instance);
     }
 }
