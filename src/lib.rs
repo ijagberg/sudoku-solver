@@ -6,6 +6,22 @@ pub struct Sudoku {
     grid: Vec<Vec<Option<u32>>>,
 }
 
+pub struct ExactCover {
+    grid: Vec<Vec<bool>>,
+}
+
+impl ExactCover {
+    pub fn from(sudoku: Sudoku) -> ExactCover {
+        let mut exact_cover = ExactCover {
+            grid: vec![
+                vec![false; sudoku.size * sudoku.size * 4];
+                sudoku.size * sudoku.size * sudoku.size
+            ],
+        };
+        exact_cover
+    }
+}
+
 impl Sudoku {
     fn height(&self) -> usize {
         self.grid.len()
