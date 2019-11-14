@@ -129,10 +129,9 @@ impl Sudoku {
             && self.count_in_sec(row, col, value) == 0
     }
 
-    pub fn solved(&self) -> Sudoku {
-        let mut self_temp = self.clone();
-        self_temp.solve();
-        self_temp
+    pub fn solved(mut self) -> Sudoku {
+        self.solve();
+        self
     }
 
     pub fn solve(&mut self) {

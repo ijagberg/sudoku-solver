@@ -89,7 +89,6 @@ mod tests {
         assert!(!unsolvable_test_instance.is_solved());
         let solved_unsolvable_test_instance = unsolvable_test_instance.solved();
         assert!(!solved_unsolvable_test_instance.is_solved());
-        assert!(unsolvable_test_instance == solved_unsolvable_test_instance);
     }
 
     #[test]
