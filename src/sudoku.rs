@@ -7,6 +7,56 @@ pub struct Sudoku {
 }
 
 impl Sudoku {
+    /// Create a new instance of a Sudoku puzzle
+    ///
+    /// `size` is the number of unique values that should
+    /// occupy each row, column, and section. A normal Sudoku puzzle
+    /// has `size=9`
+    ///
+    /// `sec_width` is the width of the sections in the puzzle.
+    /// `sec_height` is the height of the sections in the puzzle.
+    ///
+    /// # Panics
+    /// If `sec_width * sec_height != size`
+    pub fn new(size: usize, sec_width: usize, sec_height: usize) -> Self {
+        if sec_width * sec_height != size {
+            panic!("size must be equal to sec_width * sec_height");
+        }
+
+        Self {
+            size,
+            sec_width,
+            sec_height,
+            grid: vec![vec![None; size]; size],
+        }
+    }
+
+    pub fn populate_from_str(&mut self, s: &str) {
+        let lines: Vec<&str> = s.split('\n').collect();
+        assert_eq!(self.size, lines.len());
+        for (row, cols) in lines
+            .iter()
+            .enumerate()
+            .map(|(row, line)| (row, line.split_whitespace().collect::<Vec<_>>()))
+        {
+            assert_eq!(self.size, cols.len());
+            for (col, &value) in cols.iter().enumerate() {
+                let entry = match value {
+                    "_" => None,
+                    word => match word.parse::<u32>() {
+                        Ok(v) if v > 0 && v as usize <= self.size => Some(v),
+                        Ok(v) => panic!(
+                            "{} is not a valid value for a Sudoku with size {}",
+                            v, self.size
+                        ),
+                        Err(_) => panic!("Invalid format of populating string"),
+                    },
+                };
+                self.grid[row][col] = entry;
+            }
+        }
+    }
+
     fn height(&self) -> usize {
         self.grid.len()
     }
@@ -206,446 +256,5 @@ impl std::fmt::Debug for Sudoku {
         }
 
         Ok(())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn get_solvable_12x12_test_instance() -> Sudoku {
-        Sudoku {
-            size: 12,
-            sec_width: 4,
-            sec_height: 3,
-            grid: vec![
-                vec![
-                    None,
-                    Some(8),
-                    Some(12),
-                    None,
-                    None,
-                    None,
-                    None,
-                    Some(6),
-                    Some(3),
-                    Some(1),
-                    None,
-                    None,
-                ],
-                vec![
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    Some(5),
-                    Some(3),
-                    None,
-                    None,
-                    None,
-                    None,
-                    Some(2),
-                ],
-                vec![
-                    Some(3),
-                    None,
-                    Some(9),
-                    None,
-                    Some(4),
-                    Some(8),
-                    None,
-                    None,
-                    None,
-                    Some(7),
-                    None,
-                    Some(6),
-                ],
-                vec![
-                    Some(9),
-                    None,
-                    None,
-                    Some(1),
-                    None,
-                    Some(2),
-                    None,
-                    Some(8),
-                    Some(6),
-                    None,
-                    None,
-                    None,
-                ],
-                vec![
-                    Some(8),
-                    None,
-                    None,
-                    Some(11),
-                    Some(7),
-                    None,
-                    None,
-                    Some(9),
-                    None,
-                    Some(10),
-                    None,
-                    None,
-                ],
-                vec![
-                    None,
-                    Some(10),
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    Some(9),
-                    Some(2),
-                    Some(8),
-                    None,
-                ],
-                vec![
-                    None,
-                    Some(11),
-                    Some(6),
-                    Some(12),
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                    Some(10),
-                    None,
-                ],
-                vec![
-                    None,
-                    None,
-                    Some(1),
-                    None,
-                    Some(3),
-                    None,
-                    None,
-                    Some(10),
-                    Some(12),
-                    None,
-                    None,
-                    Some(11),
-                ],
-                vec![
-                    None,
-                    None,
-                    None,
-                    Some(9),
-                    Some(2),
-                    None,
-                    Some(8),
-                    None,
-                    Some(1),
-                    None,
-                    None,
-                    Some(5),
-                ],
-                vec![
-                    Some(7),
-                    None,
-                    Some(5),
-                    None,
-                    None,
-                    None,
-                    Some(4),
-                    Some(3),
-                    None,
-                    Some(8),
-                    None,
-                    Some(1),
-                ],
-                vec![
-                    Some(12),
-                    None,
-                    None,
-                    None,
-                    None,
-                    Some(1),
-                    Some(2),
-                    None,
-                    None,
-                    None,
-                    None,
-                    None,
-                ],
-                vec![
-                    None,
-                    None,
-                    Some(11),
-                    Some(4),
-                    Some(8),
-                    None,
-                    None,
-                    None,
-                    None,
-                    Some(6),
-                    Some(9),
-                    None,
-                ],
-            ],
-        }
-    }
-
-    fn get_solvable_9x9_test_instance() -> Sudoku {
-        // 003020600
-        // 900305001
-        // 001806400
-        // 008102900
-        // 700000008
-        // 006708200
-        // 002609500
-        // 800203009
-        // 005010300
-        Sudoku {
-            size: 9,
-            sec_width: 3,
-            sec_height: 3,
-            grid: vec![
-                vec![
-                    None,
-                    None,
-                    Some(3),
-                    None,
-                    Some(2),
-                    None,
-                    Some(6),
-                    None,
-                    None,
-                ],
-                vec![
-                    Some(9),
-                    None,
-                    None,
-                    Some(3),
-                    None,
-                    Some(5),
-                    None,
-                    None,
-                    Some(1),
-                ],
-                vec![
-                    None,
-                    None,
-                    Some(1),
-                    Some(8),
-                    None,
-                    Some(6),
-                    Some(4),
-                    None,
-                    None,
-                ],
-                vec![
-                    None,
-                    None,
-                    Some(8),
-                    Some(1),
-                    None,
-                    Some(2),
-                    Some(9),
-                    None,
-                    None,
-                ],
-                vec![Some(7), None, None, None, None, None, None, None, Some(8)],
-                vec![
-                    None,
-                    None,
-                    Some(6),
-                    Some(7),
-                    None,
-                    Some(8),
-                    Some(2),
-                    None,
-                    None,
-                ],
-                vec![
-                    None,
-                    None,
-                    Some(2),
-                    Some(6),
-                    None,
-                    Some(9),
-                    Some(5),
-                    None,
-                    None,
-                ],
-                vec![
-                    Some(8),
-                    None,
-                    None,
-                    Some(2),
-                    None,
-                    Some(3),
-                    None,
-                    None,
-                    Some(9),
-                ],
-                vec![
-                    None,
-                    None,
-                    Some(5),
-                    None,
-                    Some(1),
-                    None,
-                    Some(3),
-                    None,
-                    None,
-                ],
-            ],
-        }
-    }
-
-    fn get_unsolvable_9x9_test_instance() -> Sudoku {
-        // 003020600
-        // 900305001
-        // 001806400
-        // 008102900
-        // 700000008
-        // 006708200
-        // 002609500
-        // 800203309
-        // 005010000
-        Sudoku {
-            size: 9,
-            sec_width: 3,
-            sec_height: 3,
-            grid: vec![
-                vec![
-                    None,
-                    None,
-                    Some(3),
-                    None,
-                    Some(2),
-                    None,
-                    Some(6),
-                    None,
-                    None,
-                ],
-                vec![
-                    Some(9),
-                    None,
-                    None,
-                    Some(3),
-                    None,
-                    Some(5),
-                    None,
-                    None,
-                    Some(1),
-                ],
-                vec![
-                    None,
-                    None,
-                    Some(1),
-                    Some(8),
-                    None,
-                    Some(6),
-                    Some(4),
-                    None,
-                    None,
-                ],
-                vec![
-                    None,
-                    None,
-                    Some(8),
-                    Some(1),
-                    None,
-                    Some(2),
-                    Some(9),
-                    None,
-                    None,
-                ],
-                vec![Some(7), None, None, None, None, None, None, None, Some(8)],
-                vec![
-                    None,
-                    None,
-                    Some(6),
-                    Some(7),
-                    None,
-                    Some(8),
-                    Some(2),
-                    None,
-                    None,
-                ],
-                vec![
-                    None,
-                    None,
-                    Some(2),
-                    Some(6),
-                    None,
-                    Some(9),
-                    Some(5),
-                    None,
-                    None,
-                ],
-                vec![
-                    Some(8),
-                    None,
-                    None,
-                    Some(2),
-                    None,
-                    Some(3),
-                    Some(3),
-                    None,
-                    Some(9),
-                ],
-                vec![None, None, Some(5), None, Some(1), None, None, None, None],
-            ],
-        }
-    }
-
-    fn get_solvable_6x6_test_instance() -> Sudoku {
-        Sudoku {
-            size: 6,
-            sec_width: 3,
-            sec_height: 2,
-            grid: vec![
-                vec![Some(4), Some(2), Some(1), Some(3), None, None],
-                vec![None, None, Some(5), Some(4), None, Some(1)],
-                vec![None, None, Some(2), Some(6), None, None],
-                vec![None, Some(6), Some(4), None, None, None],
-                vec![Some(2), None, Some(6), Some(1), None, Some(3)],
-                vec![Some(1), Some(5), Some(3), Some(2), Some(4), None],
-            ],
-        }
-    }
-
-    #[test]
-    fn test_solvable_12x12() {
-        let mut solvable_test_instance = get_solvable_12x12_test_instance();
-        assert!(!solvable_test_instance.is_solved());
-        solvable_test_instance.solve();
-        assert!(solvable_test_instance.is_solved());
-        println!("{:?}", solvable_test_instance);
-    }
-
-    #[test]
-    fn test_solvable_9x9() {
-        let mut solvable_test_instance = get_solvable_9x9_test_instance();
-        assert!(!solvable_test_instance.is_solved());
-        solvable_test_instance.solve();
-        assert!(solvable_test_instance.is_solved());
-        println!("{:?}", solvable_test_instance);
-    }
-
-    #[test]
-    fn test_unsolvable_9x9() {
-        let unsolvable_test_instance = get_unsolvable_9x9_test_instance();
-        assert!(!unsolvable_test_instance.is_solved());
-        let solved_unsolvable_test_instance = unsolvable_test_instance.solved();
-        assert!(!solved_unsolvable_test_instance.is_solved());
-        assert!(unsolvable_test_instance == solved_unsolvable_test_instance);
-    }
-
-    #[test]
-    fn test_solvable_6x6() {
-        let mut solvable_test_instance = get_solvable_6x6_test_instance();
-        assert!(!solvable_test_instance.is_solved());
-        solvable_test_instance.solve();
-        assert!(solvable_test_instance.is_solved());
-        println!("{:?}", solvable_test_instance);
     }
 }
