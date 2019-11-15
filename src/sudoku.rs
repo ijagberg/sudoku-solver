@@ -1,3 +1,8 @@
+use std::{
+    error::Error,
+    fmt::{self, Display},
+};
+
 #[derive(Clone, PartialEq)]
 pub struct Sudoku {
     size: usize,
@@ -129,13 +134,18 @@ impl Sudoku {
             && self.count_in_sec(row, col, value) == 0
     }
 
-    pub fn solved(mut self) -> Sudoku {
-        self.solve();
-        self
+    pub fn solved(mut self) -> Result<Sudoku, SolveError> {
+        match self.solve() {
+            Ok(_) => Ok(self),
+            Err(e) => Err(e),
+        }
     }
 
-    pub fn solve(&mut self) {
-        self.solve_backtrack();
+    pub fn solve(&mut self) -> Result<(), SolveError> {
+        match self.solve_backtrack() {
+            true => Ok(()),
+            false => Err(SolveError::Unsolvable),
+        }
     }
 
     fn solve_backtrack(&mut self) -> bool {
@@ -157,6 +167,25 @@ impl Sudoku {
             }
         }
         true
+    }
+}
+
+#[derive(Debug)]
+pub enum SolveError {
+    Unsolvable,
+}
+
+impl Error for SolveError {}
+
+impl Display for SolveError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{}",
+            match *self {
+                SolveError::Unsolvable => "Unsolvable Sudoku instance",
+            }
+        )
     }
 }
 

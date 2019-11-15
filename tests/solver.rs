@@ -69,7 +69,10 @@ mod tests {
     fn test_solvable_12x12() {
         let mut solvable_test_instance = get_solvable_12x12_test_instance();
         assert!(!solvable_test_instance.is_solved());
-        solvable_test_instance.solve();
+        match solvable_test_instance.solve() {
+            Ok(_) => assert!(true),
+            Err(_) => assert!(false)
+        }
         assert!(solvable_test_instance.is_solved());
         println!("{:?}", solvable_test_instance);
     }
@@ -78,7 +81,10 @@ mod tests {
     fn test_solvable_9x9() {
         let mut solvable_test_instance = get_solvable_9x9_test_instance();
         assert!(!solvable_test_instance.is_solved());
-        solvable_test_instance.solve();
+        match solvable_test_instance.solve() {
+            Ok(_) => assert!(true),
+            Err(_) => assert!(false)
+        }
         assert!(solvable_test_instance.is_solved());
         println!("{:?}", solvable_test_instance);
     }
@@ -87,15 +93,20 @@ mod tests {
     fn test_unsolvable_9x9() {
         let unsolvable_test_instance = get_unsolvable_9x9_test_instance();
         assert!(!unsolvable_test_instance.is_solved());
-        let solved_unsolvable_test_instance = unsolvable_test_instance.solved();
-        assert!(!solved_unsolvable_test_instance.is_solved());
+        match unsolvable_test_instance.solved() {
+            Ok(_) => assert!(false),
+            Err(_) => assert!(true)
+        }
     }
 
     #[test]
     fn test_solvable_6x6() {
         let mut solvable_test_instance = get_solvable_6x6_test_instance();
         assert!(!solvable_test_instance.is_solved());
-        solvable_test_instance.solve();
+        match solvable_test_instance.solve() {
+            Ok(_) => assert!(true),
+            Err(_) => assert!(false)
+        }
         assert!(solvable_test_instance.is_solved());
         println!("{:?}", solvable_test_instance);
     }
