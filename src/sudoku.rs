@@ -22,8 +22,19 @@ impl Sudoku {
     /// `sec_height` is the height of the sections in the puzzle.
     ///
     /// # Panics
+    /// If `size`, `sec_width` or `sec_height` equals 0
+    /// 
     /// If `sec_width * sec_height != size`
     pub fn new(size: usize, sec_width: usize, sec_height: usize) -> Self {
+        if size < 1 {
+            panic!("size must be a positive integer");
+        }
+        if sec_width < 1 {
+            panic!("sec_width must be a positive integer");
+        }
+        if sec_height < 1 {
+            panic!("sec_height must be a positive integer");
+        }
         if sec_width * sec_height != size {
             panic!("size must be equal to sec_width * sec_height");
         }

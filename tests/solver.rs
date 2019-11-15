@@ -71,7 +71,7 @@ mod tests {
         assert!(!solvable_test_instance.is_solved());
         match solvable_test_instance.solve() {
             Ok(_) => assert!(true),
-            Err(_) => assert!(false)
+            Err(_) => assert!(false),
         }
         assert!(solvable_test_instance.is_solved());
         println!("{:?}", solvable_test_instance);
@@ -83,7 +83,7 @@ mod tests {
         assert!(!solvable_test_instance.is_solved());
         match solvable_test_instance.solve() {
             Ok(_) => assert!(true),
-            Err(_) => assert!(false)
+            Err(_) => assert!(false),
         }
         assert!(solvable_test_instance.is_solved());
         println!("{:?}", solvable_test_instance);
@@ -95,7 +95,7 @@ mod tests {
         assert!(!unsolvable_test_instance.is_solved());
         match unsolvable_test_instance.solved() {
             Ok(_) => assert!(false),
-            Err(_) => assert!(true)
+            Err(_) => assert!(true),
         }
     }
 
@@ -105,7 +105,7 @@ mod tests {
         assert!(!solvable_test_instance.is_solved());
         match solvable_test_instance.solve() {
             Ok(_) => assert!(true),
-            Err(_) => assert!(false)
+            Err(_) => assert!(false),
         }
         assert!(solvable_test_instance.is_solved());
         println!("{:?}", solvable_test_instance);
