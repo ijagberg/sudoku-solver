@@ -12,7 +12,7 @@ pub enum SolveError {
 pub struct Backtrack;
 
 impl Backtrack {
-    pub fn solve_backtrack(puzzle: &mut Sudoku) -> bool {
+    fn solve_backtrack(puzzle: &mut Sudoku) -> bool {
         for row in 0..puzzle.height() {
             for col in 0..puzzle.width() {
                 if puzzle.get(col, row).is_none() {
