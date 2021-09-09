@@ -13,12 +13,11 @@ pub struct Backtrack;
 
 impl Backtrack {
     fn solve_backtrack(puzzle: &mut Sudoku) -> bool {
-        for row in 0..puzzle.height() {
-            for col in 0..puzzle.width() {
+        for row in puzzle.rows() {
+            for col in puzzle.columns() {
                 if puzzle.get(col, row).is_none() {
                     for v in 1..=puzzle.size() {
-                        if puzzle.can_place_value(col, row, v as u32) {
-                            puzzle.set(col, row, Some(v as u32));
+                        if let Ok(_) = puzzle.place_if_possible(col, row, v as u32) {
                             if Backtrack::solve_backtrack(puzzle) {
                                 return true;
                             } else {
